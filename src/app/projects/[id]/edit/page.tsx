@@ -11,7 +11,11 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-export default function EditProjectPage({ params }: { params: { id: string } }) {
+type PageProps = {
+  params: { id: string };
+};
+
+export default function EditProjectPage({ params }: PageProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [project, setProject] = useState<{
