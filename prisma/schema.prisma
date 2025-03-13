@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             String          @id @default(uuid())
+  email          String          @unique
+  name           String
+  password       String
+  role           UserRole        @default(TESTER)
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  evidences      Evidence[]
+  projectMembers ProjectMember[]
+  testExecutions TestExecution[]
+
+  @@map("users")
+}
+
+model Project {
+  id             String          @id @default(uuid())
+  name           String
+  description    String?
+  status         ProjectStatus   @default(ACTIVE)
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  categories     Category[]
+  projectMembers ProjectMember[]
+  testCases      TestCase[]
+
+  @@map("projects")
+}
+
+model ProjectMember {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  projectId String   @map("project_id")
+  role      UserRole @default(TESTER)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+  @@map("project_members")
+}
+
+model Category {
+  id          String     @id @default(uuid())
+  name        String
+  description String?
+  parentId    String?    @map("parent_id")
+  projectId   String     @map("project_id")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  parent      Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryToCategory")
+  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  testCases   TestCase[]
+
+  @@map("categories")
+}
+
+model TestCase {
+  id             String          @id @default(uuid())
+  title          String
+  description    String?
+  status         TestCaseStatus  @default(DRAFT)
+  priority       TestPriority    @default(MEDIUM)
+  projectId      String          @map("project_id")
+  categoryId     String?         @map("category_id")
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  category       Category?       @relation(fields: [categoryId], references: [id])
+  project        Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  testExecutions TestExecution[]
+
+  @@map("test_cases")
+}
+
+model TestExecution {
+  id         String              @id @default(uuid())
+  testCaseId String              @map("test_case_id")
+  status     TestExecutionStatus @default(PENDING)
+  notes      String?
+  executedBy String              @map("executed_by")
+  executedAt DateTime            @default(now()) @map("executed_at")
+  createdAt  DateTime            @default(now()) @map("created_at")
+  updatedAt  DateTime            @updatedAt @map("updated_at")
+  evidences  Evidence[]
+  user       User                @relation(fields: [executedBy], references: [id], onDelete: Cascade)
+  testCase   TestCase            @relation(fields: [testCaseId], references: [id], onDelete: Cascade)
+
+  @@map("test_executions")
+}
+
+model Evidence {
+  id              String        @id @default(uuid())
+  testExecutionId String        @map("test_execution_id")
+  filePath        String        @map("file_path")
+  fileType        String        @map("file_type")
+  description     String?
+  uploadedBy      String        @map("uploaded_by")
+  uploadedAt      DateTime      @default(now()) @map("uploaded_at")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+  testExecution   TestExecution @relation(fields: [testExecutionId], references: [id], onDelete: Cascade)
+  user            User          @relation(fields: [uploadedBy], references: [id], onDelete: Cascade)
+
+  @@map("evidences")
+}
+
+enum UserRole {
+  ADMIN   @map("admin")
+  MANAGER @map("manager")
+  TESTER  @map("tester")
+  VIEWER  @map("viewer")
+}
+
+enum ProjectStatus {
+  ACTIVE    @map("active")
+  COMPLETED @map("completed")
+  ARCHIVED  @map("archived")
+}
+
+enum TestCaseStatus {
+  DRAFT    @map("draft")
+  ACTIVE   @map("active")
+  ARCHIVED @map("archived")
+}
+
+enum TestPriority {
+  LOW      @map("low")
+  MEDIUM   @map("medium")
+  HIGH     @map("high")
+  CRITICAL @map("critical")
+}
+
+enum TestExecutionStatus {
+  PENDING @map("pending")
+  PASSED  @map("passed")
+  FAILED  @map("failed")
+  BLOCKED @map("blocked")
+  SKIPPED @map("skipped")
+}
