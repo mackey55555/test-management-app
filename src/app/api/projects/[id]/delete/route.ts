@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
 
 // POSTメソッドでプロジェクト削除を処理
 export async function POST(
