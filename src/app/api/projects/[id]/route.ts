@@ -5,9 +5,8 @@ import { ProjectStatus } from "@prisma/client";
 // プロジェクト詳細取得
 export async function GET(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
-  const { params } = context;
   try {
     const project = await prisma.project.findUnique({
       where: {
@@ -35,9 +34,8 @@ export async function GET(
 // プロジェクト更新
 export async function PUT(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
-  const { params } = context;
   try {
     const body = await request.json();
 
@@ -88,9 +86,8 @@ export async function PUT(
 // プロジェクト削除
 export async function DELETE(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
-  const { params } = context;
   try {
     // プロジェクトの存在確認
     const existingProject = await prisma.project.findUnique({
