@@ -87,11 +87,7 @@ const templates = [
   },
 ];
 
-type PageProps = {
-  params: { id: string };
-};
-
-export default function TemplatePreviewPage({ params }: PageProps) {
+export default function TemplatePreviewPage({ params }: any) {
   const template = templates.find(t => t.id === params.id);
 
   if (!template) {

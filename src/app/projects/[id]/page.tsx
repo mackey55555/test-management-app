@@ -6,11 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { fetchProjectById, fetchTestCases } from "@/lib/db";
 
-type PageProps = {
-  params: { id: string };
-};
-
-export default async function ProjectDetailPage({ params }: PageProps) {
+export default async function ProjectDetailPage({ params }: any) {
   // paramsを使用する前にawaitする
   const id = params.id;
   
