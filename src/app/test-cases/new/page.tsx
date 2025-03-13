@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { MainLayout } from "@/components/layout/main-layout";
@@ -12,7 +12,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TestCaseStatus, TestPriority } from "@prisma/client";
 
+// メインページコンポーネント
 export default function NewTestCasePage() {
+  return (
+    <Suspense fallback={<div>読み込み中...</div>}>
+      <TestCaseForm />
+    </Suspense>
+  );
+}
+
+// SearchParamsを取得するコンポーネント
+function TestCaseForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const projectId = searchParams.get("projectId");
