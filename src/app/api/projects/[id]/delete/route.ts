@@ -2,16 +2,21 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 // POSTメソッドでプロジェクト削除を処理
-export async function POST(
-  request: Request,
-  ctx: { params: { id: string } }
-) {
-  const { params } = ctx;
+export async function POST(request: Request) {
+  // URLからIDを取得
+  const id = request.url.split('/').pop();
   try {
+    if (!id) {
+      return NextResponse.json(
+        { error: "プロジェクトIDが指定されていません" },
+        { status: 400 }
+      );
+    }
+
     // プロジェクトの存在確認
     const existingProject = await prisma.project.findUnique({
       where: {
-        id: params.id,
+        id,
       },
     });
 
@@ -25,7 +30,7 @@ export async function POST(
     // プロジェクトの削除
     await prisma.project.delete({
       where: {
-        id: params.id,
+        id,
       },
     });
 

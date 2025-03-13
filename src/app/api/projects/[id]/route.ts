@@ -3,15 +3,20 @@ import { prisma } from "@/lib/prisma";
 import { ProjectStatus } from "@prisma/client";
 
 // プロジェクト詳細取得
-export async function GET(
-  request: Request,
-  ctx: { params: { id: string } }
-) {
-  const { params } = ctx;
+export async function GET(request: Request) {
+  // URLからIDを取得
+  const id = request.url.split('/').pop();
   try {
+    if (!id) {
+      return NextResponse.json(
+        { error: "プロジェクトIDが指定されていません" },
+        { status: 400 }
+      );
+    }
+
     const project = await prisma.project.findUnique({
       where: {
-        id: params.id,
+        id,
       },
     });
 
@@ -33,11 +38,9 @@ export async function GET(
 }
 
 // プロジェクト更新
-export async function PUT(
-  request: Request,
-  ctx: { params: { id: string } }
-) {
-  const { params } = ctx;
+export async function PUT(request: Request) {
+  // URLからIDを取得
+  const id = request.url.split('/').pop();
   try {
     const body = await request.json();
 
@@ -49,10 +52,17 @@ export async function PUT(
       );
     }
 
+    if (!id) {
+      return NextResponse.json(
+        { error: "プロジェクトIDが指定されていません" },
+        { status: 400 }
+      );
+    }
+
     // プロジェクトの存在確認
     const existingProject = await prisma.project.findUnique({
       where: {
-        id: params.id,
+        id,
       },
     });
 
@@ -66,7 +76,7 @@ export async function PUT(
     // プロジェクトの更新
     const updatedProject = await prisma.project.update({
       where: {
-        id: params.id,
+        id,
       },
       data: {
         name: body.name,
@@ -86,16 +96,21 @@ export async function PUT(
 }
 
 // プロジェクト削除
-export async function DELETE(
-  request: Request,
-  ctx: { params: { id: string } }
-) {
-  const { params } = ctx;
+export async function DELETE(request: Request) {
+  // URLからIDを取得
+  const id = request.url.split('/').pop();
   try {
+    if (!id) {
+      return NextResponse.json(
+        { error: "プロジェクトIDが指定されていません" },
+        { status: 400 }
+      );
+    }
+
     // プロジェクトの存在確認
     const existingProject = await prisma.project.findUnique({
       where: {
-        id: params.id,
+        id,
       },
     });
 
@@ -109,7 +124,7 @@ export async function DELETE(
     // プロジェクトの削除
     await prisma.project.delete({
       where: {
-        id: params.id,
+        id,
       },
     });
 
