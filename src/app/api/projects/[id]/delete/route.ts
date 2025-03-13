@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 export async function POST(
   request: Request,
   { params }: { params: { id: string } }
-) {
+): Promise<Response> {
   try {
     // プロジェクトの存在確認
     const existingProject = await prisma.project.findUnique({

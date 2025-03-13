@@ -6,7 +6,7 @@ import { ProjectStatus } from "@prisma/client";
 export async function GET(
   request: Request,
   { params }: { params: { id: string } }
-) {
+): Promise<Response> {
   try {
     const project = await prisma.project.findUnique({
       where: {
@@ -35,7 +35,7 @@ export async function GET(
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
-) {
+): Promise<Response> {
   try {
     const body = await request.json();
 
@@ -87,7 +87,7 @@ export async function PUT(
 export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
-) {
+): Promise<Response> {
   try {
     // プロジェクトの存在確認
     const existingProject = await prisma.project.findUnique({
