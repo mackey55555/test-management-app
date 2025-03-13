@@ -4,8 +4,9 @@ import { prisma } from "@/lib/prisma";
 // POSTメソッドでプロジェクト削除を処理
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  ctx: { params: { id: string } }
 ) {
+  const { params } = ctx;
   try {
     // プロジェクトの存在確認
     const existingProject = await prisma.project.findUnique({
